@@ -4,11 +4,11 @@ Source: performance-metrics PDFs, `MSE,RMSE,MAE.pdf`, `8-Overfitting+And+Underfi
 
 ## Regression metrics
 
-- MAE: average absolute error. Same unit as y. Robust to a few huge misses.
-- MSE: average squared error. Punishes large misses. Unit is y squared.
-- RMSE: square root of MSE. Same unit as y, still punishes large misses.
+- MAE: average absolute error. Same unit as $y$. Robust to a few huge misses.
+- MSE: average squared error. Punishes large misses. Unit is $y$ squared.
+- RMSE: square root of MSE. Same unit as $y$, still punishes large misses.
 - RMSLE: RMSE on the log. Used when a proportional miss matters. House Prices uses this.
-- \(R^2\): variance explained. Can be negative if you lose to predicting the mean.
+- $R^2$: variance explained. Can be negative if you lose to predicting the mean.
 
 ## Classification metrics
 
@@ -44,6 +44,8 @@ Fit scalers, encoders, and feature selection inside the fold. Fitting them on al
 2. Precision vs recall when a false alarm is expensive? Precision. When a miss is expensive, recall.
 3. Why can ROC-AUC lie on fraud data? A model can rank most negatives below most positives and still flood you with false alarms, because negatives are almost the whole set.
 4. Where does leakage hide? Target encoded with the full column. Scaler fit before the split. A feature that is only known after the event.
+
+Full set: [interview/questions.md](../interview/questions.md#12-metrics-and-validation).
 
 ## Kaggle
 

@@ -13,8 +13,8 @@ Regression leaf: mean of the training rows that landed there. That is why a tree
 
 Try thresholds on each feature. Keep the split that most reduces impurity.
 
-- Gini: \(1 - \sum_k p_k^2\). Default in sklearn. Cheaper than entropy, usually the same tree.
-- Entropy: \(-\sum_k p_k \log p_k\). Information gain is the drop in entropy.
+- Gini: $1 - \sum_k p_k^2$. Default in sklearn. Cheaper than entropy, usually the same tree.
+- Entropy: $-\sum_k p_k \log p_k$. Information gain is the drop in entropy.
 - Regression: variance reduction, or equivalently MSE.
 
 Numeric features are split by sorting unique values and testing midpoints. Categorical features are split by grouping levels. The course note on numerical splits is this sorting step.
@@ -38,6 +38,8 @@ Failures: axis-aligned splits only, high variance (a small data change can rebui
 3. Why is a single tree unstable? The top split decides everything below it. A few flipped rows can change that split. Random forests exist because of this.
 4. Can a tree extrapolate? No. A regressor cannot predict above the highest leaf mean it saw. Linear regression can.
 5. How do you get probabilities? Class fraction in the leaf. They are coarsely calibrated. Depth and leaf size change them a lot.
+
+Full set: [interview/questions.md](../interview/questions.md#08-decision-trees).
 
 ## Kaggle
 

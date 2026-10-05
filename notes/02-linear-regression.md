@@ -6,9 +6,9 @@ Source: `1-Simple+Linear+Regression.pdf`, `2-Multiple+Linear+Regression.pdf`, `l
 
 Fit a straight line, or a flat hyperplane, that predicts a number.
 
-\[
+$$
 \hat{y} = w_0 + w_1 x_1 + \cdots + w_p x_p
-\]
+$$
 
 Simple linear regression has one input. Multiple linear regression has many. The word linear means linear in the weights, not that the raw feature must be a straight line of the original column.
 
@@ -16,15 +16,15 @@ Simple linear regression has one input. Multiple linear regression has many. The
 
 Ordinary least squares minimizes the sum of squared residuals.
 
-\[
+$$
 J(w) = \sum_i (y_i - \hat{y}_i)^2
-\]
+$$
 
-Closed form, when \(X^\top X\) is invertible:
+Closed form, when $X^\top X$ is invertible:
 
-\[
+$$
 w = (X^\top X)^{-1} X^\top y
-\]
+$$
 
 Gradient descent does the same job when the matrix is large or singular. Learning rate too big diverges. Too small just wastes steps.
 
@@ -38,8 +38,8 @@ Gradient descent does the same job when the matrix is large or singular. Learnin
 
 ## Reading the fit
 
-- Coefficient: change in \(y\) for a one-unit change in that feature, holding the others fixed. Only meaningful after you know the units and whether features were scaled.
-- \(R^2\): fraction of variance explained. It rises when you add junk features. Adjusted \(R^2\) penalizes that.
+- Coefficient: change in $y$ for a one-unit change in that feature, holding the others fixed. Only meaningful after you know the units and whether features were scaled.
+- $R^2$: fraction of variance explained. It rises when you add junk features. Adjusted $R^2$ penalizes that.
 - Residual plot: curved pattern means the linear form is wrong. Funnel shape means variance is not constant.
 
 ## Interview questions
@@ -48,6 +48,8 @@ Gradient descent does the same job when the matrix is large or singular. Learnin
 2. What does a large positive coefficient not mean? It does not mean the feature caused the outcome. It is an association conditional on the other columns.
 3. Multicollinearity: predictions can still be good. Individual coefficients cannot be trusted. Check VIF or drop one of the correlated columns.
 4. How do you know the line is the wrong shape? Residual plot bends. Then try a transform or polynomial features, not a deeper story about the same line.
+
+Full set: [interview/questions.md](../interview/questions.md#02-linear-regression).
 
 ## Kaggle
 

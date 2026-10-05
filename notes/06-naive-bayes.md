@@ -6,9 +6,9 @@ Source: `1.0-Naive+Bayes+Classifier+Indepth+Intuition.pdf`, `2.0-Variants+of+Nai
 
 Bayes rule plus a strong assumption: features are independent given the class.
 
-\[
+$$
 P(y \mid x) \propto P(y) \prod_j P(x_j \mid y)
-\]
+$$
 
 The assumption is false for almost every real table. The classifier still works when the dependence is mild, especially on text, because only the ranking of classes matters.
 
@@ -26,6 +26,8 @@ Zero probability kills the product. Laplace smoothing adds a fake count so an un
 1. Why naive? The independence assumption.
 2. Why does it work on text anyway? Words are not independent, but the model only needs a decent ranking, and each word probability is a stable estimate.
 3. Gaussian NB on raw income? A bad fit if income is skewed. Log-transform, or do not use Gaussian NB.
+
+Full set: [interview/questions.md](../interview/questions.md#06-naive-bayes).
 
 ## Kaggle
 
