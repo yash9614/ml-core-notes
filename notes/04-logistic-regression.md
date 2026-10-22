@@ -2,6 +2,8 @@
 
 Source: `5-Logistic+Regression.pdf`, `Logistic+Regression+Implementation.ipynb`, `5.3-Performance+Metrics.pdf`.
 
+**Exercise notebook:** [logistic_assignment.ipynb](04-logistic-regression/logistic_assignment.ipynb) (mapped from Google Drive ML exercises)
+
 ## What it is
 
 A linear model for a class probability. The line is passed through a sigmoid so the output stays in $(0, 1)$.
