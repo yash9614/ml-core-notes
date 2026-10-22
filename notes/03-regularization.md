@@ -2,6 +2,8 @@
 
 Source: `9-Polynomialregression.pdf`, `Ridge,Lasso+And+Elasticnet.pdf`, `Ridge Lassso Elastic Regression Practicals` on the Algerian forest-fires data.
 
+**Exercise notebook:** [l1_l2_regularization.ipynb](03-regularization/l1_l2_regularization.ipynb) (mapped from Google Drive ML exercises)
+
 ## Polynomial regression
 
 Still a linear model. You add columns such as $x^2$ and $x_1 x_2$, then fit ordinary weights. The curve bends. The math does not.
