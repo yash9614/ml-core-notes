@@ -2,6 +2,8 @@
 
 Source: AdaBoost, gradient boosting, and XGBoost PDFs and notebooks, `RandomForest+Regression.pdf`, `12.2-Out+of+bag+evaluation.pdf`.
 
+**Exercise notebook:** [ensemble_ex1_assignment.ipynb](09-ensembles/ensemble_ex1_assignment.ipynb) (mapped from Google Drive ML exercises)
+
 ## Bagging and random forests
 
 Bagging fits the same model on bootstrap samples and averages them. Variance drops. Bias stays about the same.
