@@ -2,6 +2,8 @@
 
 Source: `1-Simple+Linear+Regression.pdf`, `2-Multiple+Linear+Regression.pdf`, `linearregressionOLS.pdf`, `height-weight.csv`, `economic_index.csv`, `Multiple+Linear+Regression-+Economics+Dataset.ipynb`.
 
+**Exercise notebook:** [regression_ex1.ipynb](02-linear-regression/regression_ex1.ipynb) (mapped from Google Drive ML exercises)
+
 ## What it is
 
 Fit a straight line, or a flat hyperplane, that predicts a number.
