@@ -24,6 +24,7 @@ Note: [notes/02-linear-regression.md](../notes/02-linear-regression.md)
 6. How do you see a bad line? Residual plot curves or fans out.
 7. $R^2$ trap? It rises when you add junk features. Use adjusted $R^2$ or a holdout.
 8. Why scale features for gradient descent but not always for closed-form OLS? GD step size is sensitive to feature scale; closed form is not.
+9. Why double brackets `df[['feature']]` for a single feature? `fit()` expects a 2-D array.
 
 ## Gradient Descent (basics)
 
@@ -111,6 +112,7 @@ Note: [notes/09-ensembles.md](../notes/09-ensembles.md)
 4. Why a small learning rate in XGBoost? Each tree is a step. A small rate plus more trees beats one huge tree.
 5. Can a forest extrapolate? No. Averaging trees that cannot extrapolate still cannot.
 6. Bagging vs boosting in one line? Bagging reduces variance by averaging independent models; boosting reduces bias by focusing on residuals sequentially.
+7. Random Forest vs Gradient Boosting? RF builds trees in parallel (bagging); GB builds them sequentially (each corrects the previous).
 
 ## 10 Clustering
 
@@ -143,6 +145,16 @@ Note: [notes/12-metrics-and-validation.md](../notes/12-metrics-and-validation.md
 3. Precision vs recall? Precision when a false alarm is expensive. Recall when a miss is expensive.
 4. ROC-AUC vs PR-AUC? ROC can look fine on rare positives. PR-AUC is the fraud and churn plot.
 5. Bias vs variance? Too simple vs chasing the sample. High bias underfits. High variance overfits.
-6. Why K-fold? One split can be lucky. Stratify if a class is rare. Do not shuffle time series.
-7. Leakage? Scaler, encoder, or target encoding fit on the full column before the split.
+6. Why K-fold? One split can be lucky. Stratify if a class is rare. Do not shuffle time series. Every sample is tested exactly once.
+7. Leakage? Scaler, encoder, or target encoding fit on the full column before the split. Do preprocessing inside the CV loop or use a pipeline.
 8. What is a residual plot telling you? Systematic pattern → wrong model form; fan shape → heteroscedasticity.
+9. GridSearchCV vs RandomizedSearchCV? Grid tries every combination (exhaustive, slow on large spaces). Randomized samples a fixed number of combinations (faster, usually good enough).
+10. Why never tune on the final test set? Data leakage. Keep a completely untouched hold-out set.
+11. What does `best_estimator_` give you? The model with the best hyperparameters, already refit on the full training data.
+
+## Class imbalance (SMOTE)
+
+1. What problem does SMOTE solve? Minority class is under-represented, so the model mostly predicts the majority. SMOTE creates synthetic minority examples by interpolating between real ones.
+2. SMOTE vs random undersampling? Undersampling deletes majority rows (loses information). SMOTE adds synthetic minority rows (can introduce noise if the minority is sparse).
+3. What is SMOTETomek? SMOTE first (balance), then Tomek Links remove noisy majority points that sit very close to minority points (cleaner boundary).
+4. When is accuracy a bad metric on imbalanced data? When the majority class dominates. Prefer precision, recall, F1, or PR-AUC.
