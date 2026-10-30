@@ -25,6 +25,15 @@ Note: [notes/02-linear-regression.md](../notes/02-linear-regression.md)
 7. $R^2$ trap? It rises when you add junk features. Use adjusted $R^2$ or a holdout.
 8. Why scale features for gradient descent but not always for closed-form OLS? GD step size is sensitive to feature scale; closed form is not.
 
+## Gradient Descent (basics)
+
+See [formulae.md](../formulae.md#gradient-descent)
+
+1. What does a derivative measure? Instantaneous rate of change of the output for a tiny change in the input.
+2. Write the general GD update. $\theta := \theta - \alpha \nabla_\theta J(\theta)$. Learning rate $\alpha$ controls step size.
+3. Why can GD diverge? Learning rate too large. Or loss is not convex (local minima / saddle points).
+4. When do you prefer GD over the closed form? Large or singular $X^\top X$, or models without a closed form (logistic, neural nets).
+
 ## 03 Regularization
 
 Note: [notes/03-regularization.md](../notes/03-regularization.md)
