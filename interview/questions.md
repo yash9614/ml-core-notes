@@ -1,6 +1,6 @@
 # Interview questions by module
 
-Say the answer, then the failure mode. Notes have the longer version.
+Say the answer, then the failure mode. Notes have the longer version. Concepts and basics first.
 
 ## 01 Landscape
 
@@ -10,6 +10,7 @@ Note: [notes/01-ml-landscape.md](../notes/01-ml-landscape.md)
 2. Instance-based vs model-based? KNN stores rows and compares. Linear regression stores a weight vector and drops the rows.
 3. Parametric vs non-parametric? Parametric has a fixed number of weights. KNN and an unpruned tree grow with the data.
 4. Classification vs clustering? Classification has known class names. Clustering invents groups.
+5. What is the bias-variance tradeoff in one sentence? High bias underfits (too simple); high variance overfits (chases noise).
 
 ## 02 Linear regression
 
@@ -22,6 +23,7 @@ Note: [notes/02-linear-regression.md](../notes/02-linear-regression.md)
 5. Multicollinearity? Predictions can still be good. Individual coefficients cannot be trusted.
 6. How do you see a bad line? Residual plot curves or fans out.
 7. $R^2$ trap? It rises when you add junk features. Use adjusted $R^2$ or a holdout.
+8. Why scale features for gradient descent but not always for closed-form OLS? GD step size is sensitive to feature scale; closed form is not.
 
 ## 03 Regularization
 
@@ -44,6 +46,7 @@ Note: [notes/04-logistic-regression.md](../notes/04-logistic-regression.md)
 5. When is 0.5 the wrong threshold? Rare positives, or unequal error costs. Tune it on precision-recall.
 6. One-vs-rest vs softmax? One binary model per class, or one joint model. Softmax is the multi-class sigmoid.
 7. Why is sklearn logistic regression already regularized? Default penalty is L2. `C` is the inverse strength.
+8. Can logistic regression capture nonlinear boundaries? Only if you engineer nonlinear features (or use a kernel). The model itself is linear in the features you give it.
 
 ## 05 KNN
 
@@ -75,6 +78,7 @@ Note: [notes/07-svm.md](../notes/07-svm.md)
 4. Kernel trick? Similarity in a higher-dimensional space without building that space. RBF is the default curved kernel.
 5. SVM vs logistic regression? Margin vs likelihood. Logistic gives probabilities more naturally.
 6. What is the epsilon-tube in SVR? Errors inside it are ignored.
+7. Why scale features before SVM? Margins are geometric; unscaled features distort the geometry.
 
 ## 08 Decision trees
 
@@ -86,6 +90,7 @@ Note: [notes/08-decision-trees.md](../notes/08-decision-trees.md)
 4. Why is one tree unstable? The top split decides every split below it.
 5. Can it extrapolate? No. It cannot predict past the highest leaf mean it saw.
 6. How do you stop overfitting? `max_depth`, `min_samples_leaf`, or cost-complexity pruning.
+7. Gini vs entropy in practice? Very similar results; Gini is slightly faster to compute.
 
 ## 09 Ensembles
 
@@ -96,6 +101,7 @@ Note: [notes/09-ensembles.md](../notes/09-ensembles.md)
 3. AdaBoost vs gradient boosting? AdaBoost reweights missed rows. GBM fits the next tree to the gradient of the loss.
 4. Why a small learning rate in XGBoost? Each tree is a step. A small rate plus more trees beats one huge tree.
 5. Can a forest extrapolate? No. Averaging trees that cannot extrapolate still cannot.
+6. Bagging vs boosting in one line? Bagging reduces variance by averaging independent models; boosting reduces bias by focusing on residuals sequentially.
 
 ## 10 Clustering
 
@@ -106,6 +112,7 @@ Note: [notes/10-clustering.md](../notes/10-clustering.md)
 3. How do you pick $k$? Elbow is a hint. Silhouette is a score. Neither knows the business meaning.
 4. Hierarchical vs K-means? A dendrogram, no $k$ required up front, more expensive.
 5. DBSCAN parameters? `eps` and `min_samples`. It can mark noise. It fails when cluster densities differ.
+6. Is K-means guaranteed to find the global optimum? No. Sensitive to initialization; run multiple times or use k-means++.
 
 ## 11 Anomaly detection and PCA
 
@@ -129,3 +136,4 @@ Note: [notes/12-metrics-and-validation.md](../notes/12-metrics-and-validation.md
 5. Bias vs variance? Too simple vs chasing the sample. High bias underfits. High variance overfits.
 6. Why K-fold? One split can be lucky. Stratify if a class is rare. Do not shuffle time series.
 7. Leakage? Scaler, encoder, or target encoding fit on the full column before the split.
+8. What is a residual plot telling you? Systematic pattern → wrong model form; fan shape → heteroscedasticity.
