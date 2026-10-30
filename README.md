@@ -7,14 +7,16 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 ## How to use this
 
 1. Read the note for one algorithm.
-2. Answer the interview questions out loud before looking at the short answers.
-3. Do the linked Kaggle problem. The point is the split, metric, and error analysis, not the leaderboard.
-4. Only then open the matching notebook in the course dump.
+2. Glance at the highlighted formulas in [formulae.md](formulae.md).
+3. Answer the interview questions out loud before looking at the short answers.
+4. Do the linked Kaggle problem. The point is the split, metric, and error analysis, not the leaderboard.
+5. Only then open the matching notebook in the course dump.
 
 ## Map
 
 | Topic | Note | Course files |
 |---|---|---|
+| Core formulas (highlighted) | [formulae.md](formulae.md) | all notes |
 | Types of ML, instance vs model | [notes/01-ml-landscape.md](notes/01-ml-landscape.md) | `2-Typesof+ML+technqiues.pdf`, `instance+based+vs+model+absed+learning.pdf` |
 | Simple and multiple linear regression | [notes/02-linear-regression.md](notes/02-linear-regression.md) | `1-Simple+Linear+Regression.pdf`, `2-Multiple+Linear+Regression.pdf`, `height-weight.csv`, `economic_index.csv` |
 | Polynomial, Ridge, Lasso, Elastic Net | [notes/03-regularization.md](notes/03-regularization.md) | `9-Polynomialregression.pdf`, `Ridge,Lasso+And+Elasticnet.pdf`, Algerian forest-fires practical |
