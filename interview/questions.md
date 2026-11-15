@@ -124,6 +124,8 @@ Note: [notes/10-clustering.md](../notes/10-clustering.md)
 4. Hierarchical vs K-means? A dendrogram, no $k$ required up front, more expensive.
 5. DBSCAN parameters? `eps` and `min_samples`. It can mark noise. It fails when cluster densities differ.
 6. Is K-means guaranteed to find the global optimum? No. Sensitive to initialization; run multiple times or use k-means++.
+7. Why scale before K-Means? Euclidean distance is dominated by the feature with the largest range (same reason as KNN).
+8. When is clustering the wrong tool? When the question is a sort or index (e.g. most imbalanced, biggest shift). Use a ranking instead.
 
 ## 11 Anomaly detection and PCA
 
@@ -151,6 +153,8 @@ Note: [notes/12-metrics-and-validation.md](../notes/12-metrics-and-validation.md
 9. GridSearchCV vs RandomizedSearchCV? Grid tries every combination (exhaustive, slow on large spaces). Randomized samples a fixed number of combinations (faster, usually good enough).
 10. Why never tune on the final test set? Data leakage. Keep a completely untouched hold-out set.
 11. What does `best_estimator_` give you? The model with the best hyperparameters, already refit on the full training data.
+12. On ~15% churn, which metric decides the model? PR-AUC and class-1 F1. Accuracy ties RF and XGB at 0.93 and hides that LogReg floods false positives.
+13. Why Pipeline + ColumnTransformer? Fit preprocessor only on train. Prevents leakage from scaling, imputation, or one-hot on the full set.
 
 ## Class imbalance (SMOTE)
 
@@ -158,3 +162,15 @@ Note: [notes/12-metrics-and-validation.md](../notes/12-metrics-and-validation.md
 2. SMOTE vs random undersampling? Undersampling deletes majority rows (loses information). SMOTE adds synthetic minority rows (can introduce noise if the minority is sparse).
 3. What is SMOTETomek? SMOTE first (balance), then Tomek Links remove noisy majority points that sit very close to minority points (cleaner boundary).
 4. When is accuracy a bad metric on imbalanced data? When the majority class dominates. Prefer precision, recall, F1, or PR-AUC.
+5. `class_weight='balanced'` vs SMOTE? Weights change the loss without creating synthetic rows. Prefer weights first; SMOTE if the model needs more minority examples in feature space.
+
+## Practical case-study patterns
+
+From [ds-ml-case-studies](https://github.com/yash9614/ds-ml-case-studies):
+
+1. Duplicate transactions: latest `recorded_at` per `transaction_id` is the correction rule. Same customer + new ID is a real repeat purchase. Report revenue before vs after.
+2. Driver LTV: 30-day recency is a heuristic churn, not survival. Historical LTV understates active drivers (right-censoring). Workhorses (~74%) produce ~95% of pay.
+3. Telecom churn: international plan + 4+ service calls separate churners before any model. Drop collinear charge columns and high-cardinality state.
+4. Adult income: drop `fnlwgt` and redundant education. RF wins on F1/ROC-AUC; GaussianNB fails after one-hot.
+5. Laptop price: iterative VIF > 20 removes multicollinear features. Weighted Voting Regressor (GB + ET + RF) beats single models. Multi-hot list columns and resolution split are required features.
+6. Diversity clustering: scale shares before K-Means. Do not mix sector and industry grain. Silhouette 0.54 on sectors; questions about imbalance or shift are sorts, not clustering.
