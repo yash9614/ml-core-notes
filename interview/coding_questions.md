@@ -1,8 +1,16 @@
 # ML Coding Interview Questions
 
-Numerically stable implementations of common ML primitives. All use only NumPy and the standard library (no SciPy / statsmodels). Solutions match the StrataScratch test cases.
+Numerically stable implementations of common ML primitives. All use only **NumPy** and the Python standard library (no SciPy / statsmodels). Solutions match the StrataScratch test cases.
+
+**Libraries used across the file**
+- `numpy` — arrays, matrix products, norms, unique, add.at, logaddexp, tanh
+- `math` — not required here; NumPy covers the needed functions
 
 ## 1. Top-k Cosine Similarity Search
+
+**Concept**: Cosine similarity measures the angle between two vectors, ignoring magnitude. Two documents that point in the same direction get the same score even if one is longer. Ties are broken by keeping the original (lower) index via a stable sort.
+
+**Libraries**: `numpy` (`asarray`, `@`, `linalg.norm`, `argsort`)
 
 **Problem**: Given a query vector, a matrix of document embeddings (one row per document), and an integer `k`, return the indices of the `k` documents most similar to the query by cosine similarity, most similar first. Break ties by the lower index.
 
@@ -26,6 +34,10 @@ def top_k_cosine(query, docs, k):
 
 ## 2. Numerically Stable Softmax
 
+**Concept**: Softmax turns logits into probabilities that sum to 1. It is invariant to adding a constant to every logit in a row. Subtracting the row max keeps every exponent ≤ 1 so `exp` cannot overflow.
+
+**Libraries**: `numpy` (`asarray`, `max`, `exp`, `sum`)
+
 **Problem**: Implement a row-wise softmax. Each output row must sum to 1. Must stay correct for very large logits (up to 1000 in absolute value).
 
 ```python
@@ -43,6 +55,10 @@ def softmax(logits):
 ```
 
 ## 3. Binary Cross-Entropy From Logits
+
+**Concept**: The textbook form `log(sigmoid(z))` breaks when the sigmoid saturates. Rewrite the loss directly in terms of the logit: positive examples contribute `log(1 + exp(-z))`, negative examples contribute `log(1 + exp(z))`. `logaddexp` computes this without overflow.
+
+**Libraries**: `numpy` (`asarray`, `logaddexp`, `mean`)
 
 **Problem**: Compute the mean binary cross-entropy loss from raw logits and binary labels. Must be correct and finite for any logits.
 
@@ -63,6 +79,10 @@ def bce_with_logits(logits, labels):
 
 ## 4. Top-k Accuracy
 
+**Concept**: An example is correct under top-k if fewer than `k` classes score strictly higher than the true class. Ties at the boundary count as correct. Counting “how many beat the true class” is cheaper than sorting every row.
+
+**Libraries**: `numpy` (`asarray`, fancy indexing, comparison, `sum`, `mean`)
+
 **Problem**: Compute top-k accuracy. An example is correct if fewer than `k` classes score strictly higher than its true class (ties count in the true class's favor).
 
 ```python
@@ -81,6 +101,10 @@ def top_k_accuracy(scores, labels, k):
 ```
 
 ## 5. Gini Impurity and the Best Decision-Stump Split
+
+**Concept**: Gini impurity is `1 - Σ p_k²`. A split is scored by the size-weighted average of the two children’s Gini values. Thresholds sit halfway between consecutive distinct feature values. Ties are broken by smaller feature index, then smaller threshold.
+
+**Libraries**: `numpy` (`asarray`, `unique`, boolean masks, `sum`)
 
 **Problem**: Find the best single split for a decision stump using Gini impurity. For every feature, try every threshold halfway between two consecutive distinct values. Rows with value ≤ threshold go left. Score a split by the size-weighted average of the two children's Gini impurities. Return `[feature_index, threshold, weighted_gini]` for the lowest score. Break ties by smaller feature index, then smaller threshold.
 
@@ -118,6 +142,10 @@ def best_stump_split(X, y):
 
 ## 6. LoRA Forward Pass
 
+**Concept**: A frozen weight matrix is adapted by a low-rank update. Project the input down to rank `r`, then back up, and scale by `alpha / r`. Computing `(x @ A.T) @ B.T` never materializes the full `out × in` update, so memory stays proportional to the rank.
+
+**Libraries**: `numpy` (`asarray`, matrix products `@`)
+
 **Problem**: Implement the forward pass of a linear layer with a LoRA adapter. Frozen weight `W` (out × in). Adapter adds a low-rank update through `A` (r × in) and `B` (out × r), scaled by `alpha / r`:
 
 $$ y = x W^\top + \frac{\alpha}{r} x A^\top B^\top $$
@@ -140,6 +168,10 @@ def lora_forward(x, W, A, B, alpha):
 ```
 
 ## 7. Logistic Regression With Gradient Descent
+
+**Concept**: Predict `sigmoid(X @ w + b)`. The gradient of mean binary cross-entropy w.r.t. the scores is simply `prediction - label`. Add L2 only to the weights (bias is never regularized). A stable sigmoid via `tanh` avoids overflow for large logits.
+
+**Libraries**: `numpy` (`asarray`, `zeros`, `tanh`, matrix products, `mean`)
 
 **Problem**: Train a binary logistic regression model with full-batch gradient descent. Predict `sigmoid(X @ w + b)`. Minimize mean binary cross-entropy plus an L2 penalty `(l2 / 2) * ||w||^2` on the weights only (bias is not regularized). Start from `w = 0`, `b = 0`. The sigmoid must stay numerically stable for very large inputs. Return the final weights followed by the bias as one flat list.
 
@@ -171,6 +203,10 @@ def train_logreg(X, y, lr, epochs, l2):
 
 ## 8. Confusion Matrix
 
+**Concept**: Entry `(i, j)` counts examples whose true class is `i` and predicted class is `j`. Rows are true classes, columns are predicted classes. `np.add.at` accumulates repeated pairs instead of overwriting them.
+
+**Libraries**: `numpy` (`zeros`, `add.at`, `asarray`)
+
 **Problem**: Build a confusion matrix. Entry `[i][j]` counts the examples with true class `i` that were predicted as class `j`. Rows are true classes, columns are predicted classes.
 
 ```python
@@ -187,6 +223,10 @@ def confusion_matrix(y_true, y_pred, n_classes):
 ```
 
 ## 9. Cross-Entropy Loss From Scratch
+
+**Concept**: Cross-entropy is the negative log-probability of the true class. Compute log-softmax directly (shifted logit minus log-sum-exp) so large logits never overflow. Average the negatives over the batch.
+
+**Libraries**: `numpy` (`asarray`, `max`, `exp`, `log`, fancy indexing, `mean`)
 
 **Problem**: Implement mean cross-entropy loss for a batch. Given raw logits of shape `(batch_size, num_classes)` and integer class labels of shape `(batch_size,)`, return the average loss. Must stay numerically stable for large logits.
 
@@ -209,4 +249,4 @@ def cross_entropy(logits, labels):
 
 **Sources**: StrataScratch ML coding questions (IDs 10713, 10751, 10746, 10754, 10745, 10740, 10722, 10755, 10707).
 
-See also the conceptual interview bank in [questions.md](questions.md).
+See also the conceptual interview bank in [questions.md](questions.md) and the concepts summary in [notes/13-coding-concepts.md](../notes/13-coding-concepts.md).
