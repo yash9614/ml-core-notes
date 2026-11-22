@@ -9,7 +9,7 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 1. Read the note for one algorithm.
 2. Glance at the highlighted formulas in [formulae.md](formulae.md).
 3. Answer the interview questions out loud before looking at the short answers.
-4. Implement the coding primitives in [interview/coding_questions.md](interview/coding_questions.md).
+4. Read the coding concepts in [notes/13-coding-concepts.md](notes/13-coding-concepts.md) and implement the primitives in [interview/coding_questions.md](interview/coding_questions.md).
 5. Do the linked Kaggle problem. The point is the split, metric, and error analysis, not the leaderboard.
 6. Only then open the matching notebook in the course dump.
 
@@ -30,6 +30,7 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 | K-means, hierarchical, DBSCAN | [notes/10-clustering.md](notes/10-clustering.md) | `Kmeans+clustering.pdf`, `Hierarichal+Clustering.pdf`, `DBCAN.pdf` |
 | Anomaly detection and PCA | [notes/11-anomaly-and-pca.md](notes/11-anomaly-and-pca.md) | Isolation Forest, LOF, `PCA.pdf` |
 | Metrics, bias/variance, cross-validation | [notes/12-metrics-and-validation.md](notes/12-metrics-and-validation.md) | performance-metrics PDFs, `Types+Of+Cross+Validation.pdf` |
+| Coding concepts (stable softmax, BCE, cosine, LoRA, …) | [notes/13-coding-concepts.md](notes/13-coding-concepts.md) | from coding questions |
 | Interview bank (conceptual) | [interview/questions.md](interview/questions.md) | all of the above |
 | Interview bank (coding) | [interview/coding_questions.md](interview/coding_questions.md) | top-k cosine, stable softmax, BCE, top-k accuracy, Gini stump, LoRA, logistic GD, confusion matrix, cross-entropy |
 | Kaggle problems | [kaggle/must-try.md](kaggle/must-try.md) | practice only |
@@ -44,4 +45,4 @@ These stay in the old repo until we port code.
 
 ## Suggested order
 
-Metrics first if you already know the model names. Otherwise: linear regression, logistic regression, decision trees, ensembles, then KNN, Naive Bayes, SVM, clustering, anomaly detection, PCA.
+Metrics first if you already know the model names. Otherwise: linear regression, logistic regression, decision trees, ensembles, then KNN, Naive Bayes, SVM, clustering, anomaly detection, PCA. Finish with the coding concepts and implementations.
