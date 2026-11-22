@@ -1,52 +1,44 @@
-# Metrics, overfitting, cross-validation
+# Metrics and validation
 
-Source: performance-metrics PDFs, `MSE,RMSE,MAE.pdf`, `8-Overfitting+And+Underfitting.pdf`, `Types+Of+Cross+Validation.pdf`.
+## Regression
 
-## Regression metrics
+- **MSE / RMSE**: penalizes large errors more than MAE.
+- **R²**: fraction of variance explained. Rises when you add junk features; prefer adjusted R² or a holdout.
 
-- MAE: average absolute error. Same unit as $y$. Robust to a few huge misses.
-- MSE: average squared error. Punishes large misses. Unit is $y$ squared.
-- RMSE: square root of MSE. Same unit as $y$, still punishes large misses.
-- RMSLE: RMSE on the log. Used when a proportional miss matters. House Prices uses this.
-- $R^2$: variance explained. Can be negative if you lose to predicting the mean.
+## Classification
 
-## Classification metrics
+- **Accuracy**: useless when one class dominates.
+- **Precision**: TP / (TP + FP). Use when false alarms are expensive.
+- **Recall**: TP / (TP + FN). Use when misses are expensive.
+- **F1**: harmonic mean of precision and recall.
+- **ROC-AUC**: can look fine on rare positives.
+- **PR-AUC**: the plot that matters for fraud and churn.
 
-- Accuracy: fraction correct. Only if classes are balanced and errors cost the same.
-- Precision: of the predicted positives, how many were positive.
-- Recall: of the actual positives, how many you caught.
-- F1: harmonic mean of precision and recall. Useful, not a business metric.
-- ROC-AUC: ranking quality across thresholds. Can look strong when positives are rare.
-- PR-AUC: precision against recall. The one to quote for fraud, churn, and disease.
-- Log loss: punishes confident wrong probabilities.
+## Top-k accuracy
 
-Confusion matrix first. A single number second.
+An example is correct if fewer than `k` classes score strictly higher than its true class. Ties at the boundary count as correct.
 
-## Overfit and underfit
+## Confusion matrix
 
-Underfit: high train error, high test error. Model is too simple, or features are missing.
-Overfit: low train error, high test error. Model memorized. Constrain it, get more data, or clean leakage.
+Rows = true class, columns = predicted class. Entry `(i, j)` is the count of true `i` predicted as `j`. The entries sum to the number of examples.
 
-A learning curve separates the two. If both curves are high and close, add features or a richer model. If train is low and validation is high, regularize or get more rows.
+## Bias vs variance
+
+- High bias: too simple, underfits.
+- High variance: chases the sample, overfits.
 
 ## Cross-validation
 
-- Holdout: one split. Fast, noisy.
-- K-fold: rotate the validation fold. Stratify for rare classes.
-- Time series: never shuffle. Train on the past, validate on the future.
-- Group: keep a user or a hospital entirely in train or entirely in test.
+- K-fold: every sample is tested exactly once. Stratify when a class is rare.
+- Do not shuffle time series.
+- Fit preprocessors inside the CV loop (or use a Pipeline) to avoid leakage.
 
-Fit scalers, encoders, and feature selection inside the fold. Fitting them on all rows before the split is leakage.
+## Hyperparameter search
 
-## Interview questions
+- GridSearchCV: exhaustive, slow on large spaces.
+- RandomizedSearchCV: samples a fixed number of combinations, usually good enough.
+- Never tune on the final test set. Keep a completely untouched hold-out.
 
-1. RMSE vs MAE? RMSE punishes big errors more.
-2. Precision vs recall when a false alarm is expensive? Precision. When a miss is expensive, recall.
-3. Why can ROC-AUC lie on fraud data? A model can rank most negatives below most positives and still flood you with false alarms, because negatives are almost the whole set.
-4. Where does leakage hide? Target encoded with the full column. Scaler fit before the split. A feature that is only known after the event.
+## Coding reference
 
-Full set: [interview/questions.md](../interview/questions.md#12-metrics-and-validation).
-
-## Kaggle
-
-Every problem in the Kaggle list. Name the metric before fitting, then check one leaked feature you almost used.
+Top-k accuracy and confusion matrix: [interview/coding_questions.md](../interview/coding_questions.md).

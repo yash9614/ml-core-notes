@@ -1,48 +1,48 @@
 # Decision trees
 
-Source: `Decision+Tree+Classifier+.pdf`, `Decision+Tree+Regressor.pdf`, `Decision+Tree+split+For+Numerical+Features.pdf`, `Decision+Tree+Classifier+Practical+Implementation.ipynb`, `Diabetes+Prediction+Using+Decision+Tree+Regressor.ipynb`.
+## Split criteria
 
-## What it is
+**Classification**
 
-A sequence of if/else splits. Each internal node tests one feature. Each leaf holds a class or a mean value.
+- Gini impurity: `1 - Σ p_k²`
+- Entropy: `-Σ p_k log p_k`
 
-Classification leaf: majority class, or the class frequencies if you want a probability.
-Regression leaf: mean of the training rows that landed there. That is why a tree regressor predicts a step function, not a smooth curve.
+**Regression**
 
-## How a split is chosen
+Variance reduction. The leaf prediction is the mean (or median) of the targets in that leaf.
 
-Try thresholds on each feature. Keep the split that most reduces impurity.
+## Numeric splits
 
-- Gini: $1 - \sum_k p_k^2$. Default in sklearn. Cheaper than entropy, usually the same tree.
-- Entropy: $-\sum_k p_k \log p_k$. Information gain is the drop in entropy.
-- Regression: variance reduction, or equivalently MSE.
+Sort the column. Candidate thresholds lie halfway between consecutive distinct values. Rows with feature ≤ threshold go left.
 
-Numeric features are split by sorting unique values and testing midpoints. Categorical features are split by grouping levels. The course note on numerical splits is this sorting step.
+## Scoring a split
+
+Size-weighted average of the children's impurities:
+
+```math
+\text{score} = \frac{n_L}{n} G_L + \frac{n_R}{n} G_R
+```
+
+Lower is better. Ties are broken by smaller feature index, then smaller threshold.
 
 ## Why trees overfit
 
-A deep tree can isolate single rows. Pure leaves look perfect on train and fail on test.
+A single tree can keep splitting until every leaf is pure. The top split also decides every split below it, so the tree is unstable.
 
-Controls: `max_depth`, `min_samples_leaf`, `min_samples_split`, `max_leaf_nodes`, or cost-complexity pruning (`ccp_alpha`). Pruning beats "I will just set depth to 3" once the data is not tiny.
+## Stopping overfitting
 
-## Strengths and failures
+- `max_depth`
+- `min_samples_leaf` / `min_samples_split`
+- Cost-complexity pruning (`ccp_alpha`)
 
-Strengths: no scaling needed, mixed feature types, a path you can read to a business user.
+## Extrapolation
 
-Failures: axis-aligned splits only, high variance (a small data change can rebuild the tree), weak on linear relationships unless the tree is deep.
+A tree cannot predict past the range of leaf means it saw. It produces a step function.
 
-## Interview questions
+## Gini vs entropy
 
-1. Gini vs entropy? Both measure impurity. Gini does not need a log. In practice the trees are close. Do not claim one is always more accurate.
-2. How does a tree handle a numeric feature? Sort it, try thresholds between adjacent values, pick the threshold with the best impurity drop.
-3. Why is a single tree unstable? The top split decides everything below it. A few flipped rows can change that split. Random forests exist because of this.
-4. Can a tree extrapolate? No. A regressor cannot predict above the highest leaf mean it saw. Linear regression can.
-5. How do you get probabilities? Class fraction in the leaf. They are coarsely calibrated. Depth and leaf size change them a lot.
+Results are usually very similar. Gini is slightly cheaper to compute.
 
-Full set: [interview/questions.md](../interview/questions.md#08-decision-trees).
+## Coding reference
 
-## Kaggle
-
-- [Titanic](https://www.kaggle.com/competitions/titanic): fit a depth-3 tree and read the splits. Sex and class should appear near the top.
-- [Diabetes prediction dataset](https://www.kaggle.com/datasets/iammustafatz/diabetes-prediction-dataset) or the course diabetes notebook: tree regressor, then compare RMSE against a linear model.
-- [Stroke Prediction Dataset](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset): imbalanced classification. A tree will look accurate and still miss the positive class. Use recall and PR-AUC.
+Best decision-stump split by size-weighted Gini: [interview/coding_questions.md](../interview/coding_questions.md).
