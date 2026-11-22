@@ -2,6 +2,8 @@
 
 Say the answer, then the failure mode. Notes have the longer version. Concepts and basics first.
 
+**Coding implementations**: [coding_questions.md](coding_questions.md) (top-k cosine, stable softmax, BCE, top-k accuracy, Gini stump, LoRA, logistic GD, confusion matrix, cross-entropy).
+
 ## 01 Landscape
 
 Note: [notes/01-ml-landscape.md](../notes/01-ml-landscape.md)
@@ -174,3 +176,16 @@ From [ds-ml-case-studies](https://github.com/yash9614/ds-ml-case-studies):
 4. Adult income: drop `fnlwgt` and redundant education. RF wins on F1/ROC-AUC; GaussianNB fails after one-hot.
 5. Laptop price: iterative VIF > 20 removes multicollinear features. Weighted Voting Regressor (GB + ET + RF) beats single models. Multi-hot list columns and resolution split are required features.
 6. Diversity clustering: scale shares before K-Means. Do not mix sector and industry grain. Silhouette 0.54 on sectors; questions about imbalance or shift are sorts, not clustering.
+
+## Coding primitives
+
+Full implementations in [coding_questions.md](coding_questions.md):
+
+- Top-k cosine similarity (stable sort for ties)
+- Numerically stable softmax and cross-entropy
+- Binary cross-entropy from logits (`logaddexp`)
+- Top-k accuracy (ties count in true class's favor)
+- Best decision-stump split by size-weighted Gini
+- LoRA forward pass (low-rank update without materializing the full matrix)
+- Logistic regression with stable sigmoid and L2 on weights only
+- Confusion matrix via `np.add.at`
