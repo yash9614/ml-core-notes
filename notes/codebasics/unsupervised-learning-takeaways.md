@@ -1,12 +1,13 @@
 # Unsupervised Learning – Key Takeaways
 
-Source: codebasics.io Takeaways – Unsupervised Learning.
+Source: codebasics.io Takeaways – Unsupervised Learning.  
+**Industrial relevance added:** real use cases, practical limitations, and production considerations.
 
-No labels. Goal is to discover structure: clusters, density, outliers.
+No labels. Goal is to discover structure: clusters, density, outliers. In industry, unsupervised methods are most often used for customer segmentation, anomaly detection, and exploratory analysis rather than as the final production model.
 
 ## K-Means
 
-1. Choose K centroids (randomly).
+1. Choose K centroids (randomly or with k-means++).
 2. Assign every point to the nearest centroid.
 3. Move each centroid to the mean of its points.
 4. Repeat until assignments stop changing.
@@ -14,12 +15,19 @@ No labels. Goal is to discover structure: clusters, density, outliers.
 **Choosing K**:  
 - Plot SSE (sum of squared distances to centroids) vs. K.  
 - Look for the “elbow” where SSE stops dropping sharply.  
-- In sklearn, `inertia_` is the SSE.
+- In sklearn, `inertia_` is the SSE.  
+- Also consider silhouette score and business interpretability.
 
 **Tips**:  
 - Scale features first (min-max or standard).  
 - Sensitive to initialization and outliers.  
-- Works best when clusters are roughly spherical and of similar size.
+- Works best when clusters are roughly spherical and of similar size.  
+- Use k-means++ initialization for better results.
+
+**Industrial relevance:**  
+- Very common for customer segmentation.  
+- Always validate clusters with business stakeholders—mathematical clusters may not be actionable.  
+- Not suitable when clusters have different densities or non-spherical shapes.
 
 ## Hierarchical Clustering
 
@@ -35,9 +43,13 @@ Builds a tree of clusters.
 - Single: min distance between points  
 - Complete: max distance  
 - Average: mean distance  
-- Ward: minimizes increase in within-cluster variance
+- Ward: minimizes increase in within-cluster variance (often preferred)
 
 SciPy provides the tools; sklearn has `AgglomerativeClustering`.
+
+**Industrial relevance:**  
+- Useful for smaller datasets where you want a hierarchy (e.g., product taxonomy).  
+- Computationally expensive for large data. Dendrograms are excellent for stakeholder communication.
 
 ## DBSCAN
 
@@ -53,3 +65,18 @@ Density-based. Parameters: `eps` (neighborhood radius) and `min_samples`.
 - Does not require specifying number of clusters  
 
 **Tuning**: trial-and-error + scatter plots. Excellent for outlier detection.
+
+**Industrial relevance:**  
+- Strong choice for anomaly detection and when cluster shapes are unknown.  
+- Sensitive to parameter choice; often needs domain knowledge or grid search on a validation set.  
+- Does not scale as easily as K-Means to very large datasets without approximations.
+
+## Interview Questions
+
+1. What is the difference between K-Means and hierarchical clustering?
+2. How do you choose the optimal number of clusters in K-Means?
+3. When would you use DBSCAN instead of K-Means?
+4. What are the main limitations of K-Means?
+5. Explain the role of linkage methods in hierarchical clustering.
+6. How would you use unsupervised learning for customer segmentation in a real company? What would success look like?
+7. How does DBSCAN identify outliers?
