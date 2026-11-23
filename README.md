@@ -27,6 +27,7 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 | SVM | [notes/07-svm.md](notes/07-svm.md) | `6-Support+Vector+Classifier.pdf`, `6.1-SVR.pdf`, `6.2-SVM+Kernels.pdf` |
 | Decision trees | [notes/08-decision-trees.md](notes/08-decision-trees.md) | classifier and regressor PDFs, diabetes regressor notebook |
 | Random forest, AdaBoost, GBM, XGBoost | [notes/09-ensembles.md](notes/09-ensembles.md) | AdaBoost, gradient boosting, XGBoost PDFs and notebooks |
+| Class imbalance handling | [notes/class-imbalance.md](notes/class-imbalance.md) | breast-cancer exercise (SMOTE, undersampling) |
 | K-means, hierarchical, DBSCAN | [notes/10-clustering.md](notes/10-clustering.md) | `Kmeans+clustering.pdf`, `Hierarichal+Clustering.pdf`, `DBCAN.pdf` |
 | Anomaly detection and PCA | [notes/11-anomaly-and-pca.md](notes/11-anomaly-and-pca.md) | Isolation Forest, LOF, `PCA.pdf` |
 | Metrics, bias/variance, cross-validation | [notes/12-metrics-and-validation.md](notes/12-metrics-and-validation.md) | performance-metrics PDFs, `Types+Of+Cross+Validation.pdf` |
