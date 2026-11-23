@@ -1,7 +1,7 @@
 # Unsupervised Learning – Key Takeaways
 
 Source: codebasics.io Takeaways – Unsupervised Learning.  
-**Industrial relevance added:** real use cases, practical limitations, and production considerations.
+**Industrial relevance and practical patterns added.**
 
 No labels. Goal is to discover structure: clusters, density, outliers. In industry, unsupervised methods are most often used for customer segmentation, anomaly detection, and exploratory analysis rather than as the final production model.
 
@@ -18,13 +18,36 @@ No labels. Goal is to discover structure: clusters, density, outliers. In indust
 - In sklearn, `inertia_` is the SSE.  
 - Also consider silhouette score and business interpretability.
 
+### Practical elbow method
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+wcss = []
+for k in range(1, 11):
+    km = KMeans(n_clusters=k, init="k-means++", random_state=42, n_init=10)
+    km.fit(X_scaled)
+    wcss.append(km.inertia_)
+
+plt.plot(range(1, 11), wcss, marker="o")
+plt.xlabel("k")
+plt.ylabel("WCSS (Inertia)")
+plt.title("Elbow Method")
+plt.show()
+```
+
 **Tips**:  
 - Scale features first (min-max or standard).  
 - Sensitive to initialization and outliers.  
 - Works best when clusters are roughly spherical and of similar size.  
 - Use k-means++ initialization for better results.
 
-**Industrial relevance:**  
+**Industrial relevance**:  
 - Very common for customer segmentation.  
 - Always validate clusters with business stakeholders—mathematical clusters may not be actionable.  
 - Not suitable when clusters have different densities or non-spherical shapes.
@@ -45,9 +68,7 @@ Builds a tree of clusters.
 - Average: mean distance  
 - Ward: minimizes increase in within-cluster variance (often preferred)
 
-SciPy provides the tools; sklearn has `AgglomerativeClustering`.
-
-**Industrial relevance:**  
+**Industrial relevance**:  
 - Useful for smaller datasets where you want a hierarchy (e.g., product taxonomy).  
 - Computationally expensive for large data. Dendrograms are excellent for stakeholder communication.
 
@@ -64,11 +85,9 @@ Density-based. Parameters: `eps` (neighborhood radius) and `min_samples`.
 - Automatically detects outliers  
 - Does not require specifying number of clusters  
 
-**Tuning**: trial-and-error + scatter plots. Excellent for outlier detection.
-
-**Industrial relevance:**  
+**Industrial relevance**:  
 - Strong choice for anomaly detection and when cluster shapes are unknown.  
-- Sensitive to parameter choice; often needs domain knowledge or grid search on a validation set.  
+- Sensitive to parameter choice; often needs domain knowledge.  
 - Does not scale as easily as K-Means to very large datasets without approximations.
 
 ## Interview Questions
