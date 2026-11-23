@@ -1,7 +1,7 @@
 # Ensemble Learning – Key Takeaways
 
 Source: codebasics.io Takeaways – Ensemble Learning.  
-**Industrial relevance added:** why ensembles dominate tabular data and practical production notes.
+**Industrial relevance and practical patterns added.**
 
 Ensemble methods combine multiple models to get better accuracy and robustness than any single model. In industry, gradient boosting ensembles are the default choice for most tabular problems.
 
@@ -27,15 +27,34 @@ Sequential: each new model focuses on the errors of the previous ones.
 
 - **AdaBoost**: increases weights of misclassified instances. Uses decision stumps (depth-1 trees).
 - **Gradient Boosting**: fits new trees on the residual errors (pseudo-residuals). Learning rate controls how much each tree contributes.
-  - Classification uses logistic loss; regression uses MSE.
-- **XGBoost / LightGBM / CatBoost**: highly optimized gradient boosting.  
-  Benefits: high accuracy, built-in regularization, handles missing values, feature importance, very fast (pruning, parallel processing, cache awareness, sparse data).
+- **XGBoost / LightGBM / CatBoost**: highly optimized gradient boosting. High accuracy, built-in regularization, handles missing values, feature importance, very fast.
 
-**Industrial relevance:**  
+**Industrial relevance**:  
 - XGBoost / LightGBM / CatBoost win the majority of Kaggle tabular competitions and are the workhorse in production for structured data.  
 - Random Forest is preferred when you need less tuning and more robustness.  
 - Always use early stopping and proper cross-validation with boosting to avoid overfitting.  
-- Feature importance from tree ensembles is widely used for interpretation (though SHAP is better for rigorous explanations).
+- Feature importance from tree ensembles is widely used; SHAP is preferred for rigorous explanations.
+
+### Practical model comparison
+
+```python
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+
+models = {
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
+    "Gradient Boosting": GradientBoostingClassifier(n_estimators=100, random_state=42),
+    "AdaBoost": AdaBoostClassifier(n_estimators=100, random_state=42)
+}
+
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print(f"\n{name}")
+    print(classification_report(y_test, y_pred))
+    if hasattr(model, "predict_proba"):
+        print(f"ROC-AUC: {roc_auc_score(y_test, model.predict_proba(X_test)[:, 1]):.3f}")
+```
 
 ### Stacking
 
@@ -44,9 +63,9 @@ Train a meta-model on the predictions of base models. Powerful but more complex 
 ## Practical notes
 
 - Random Forest and Gradient Boosting / XGBoost are usually among the strongest classical algorithms.
-- All trees in a Random Forest use the same splitting criterion; you tune number of trees, max depth, min samples, etc.
 - Boosting can overfit if not regularized; early stopping and learning rate help.
 - In production, prefer fewer, well-regularized trees over extremely deep ensembles for latency and maintainability.
+- Always compare against a simple baseline (logistic regression or shallow tree).
 
 ## Interview Questions
 
@@ -57,3 +76,4 @@ Train a meta-model on the predictions of base models. Powerful but more complex 
 5. What is early stopping and why is it important for boosting algorithms?
 6. Explain the role of learning rate in gradient boosting.
 7. How do you interpret feature importance from a tree-based ensemble? What are its limitations?
+8. How would you systematically compare several ensemble models on a new tabular dataset?
