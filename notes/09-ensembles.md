@@ -27,8 +27,6 @@ Each training sample starts with equal weight. After each weak learner (usually 
 
 The final prediction is a weighted vote. AdaBoost is sensitive to label noise because noisy points keep receiving higher weight.
 
-**Practical note**: Works well on moderately sized tabular data. Often outperformed by modern gradient boosting on large datasets, but still useful for understanding boosting.
-
 ### Gradient Boosting
 
 Fits the next tree to the negative gradient of the loss (residuals for squared error). Learning rate multiplies each tree’s contribution so many small steps beat one large step.
@@ -37,30 +35,55 @@ Fits the next tree to the negative gradient of the loss (residuals for squared e
 
 Highly optimized gradient boosting with regularization, second-order information, missing-value handling, and fast training. The default strong baseline for most tabular problems in industry.
 
-### Practical code
+### Practical model comparison pattern
 
 ```python
-from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
-from xgboost import XGBClassifier
-from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.metrics import classification_report, roc_auc_score
 
-# AdaBoost
-ada = AdaBoostClassifier(n_estimators=100, learning_rate=0.1, random_state=42)
-ada.fit(X_train, y_train)
-print("AdaBoost")
-print(classification_report(y_test, ada.predict(X_test)))
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
+    "Gradient Boosting": GradientBoostingClassifier(n_estimators=100, random_state=42),
+    "AdaBoost": AdaBoostClassifier(n_estimators=100, random_state=42)
+}
 
-# Gradient Boosting
-gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42)
-gb.fit(X_train, y_train)
-print("GBM")
-print(classification_report(y_test, gb.predict(X_test)))
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    y_prob = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+    print(f"\n{name}")
+    print(classification_report(y_test, y_pred))
+    if y_prob is not None:
+        print(f"ROC-AUC: {roc_auc_score(y_test, y_prob):.3f}")
+```
 
-# XGBoost
-xgb = XGBClassifier(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=42)
-xgb.fit(X_train, y_train)
-print("XGBoost")
-print(classification_report(y_test, xgb.predict(X_test)))
+### RandomizedSearchCV pattern (from holiday package notebooks)
+
+```python
+from sklearn.model_selection import RandomizedSearchCV
+
+param_dist = {
+    "n_estimators": [100, 200, 500],
+    "max_depth": [3, 5, 10, None],
+    "min_samples_split": [2, 5, 10]
+}
+
+search = RandomizedSearchCV(
+    RandomForestClassifier(random_state=42),
+    param_distributions=param_dist,
+    n_iter=20,
+    cv=3,
+    scoring="roc_auc",
+    random_state=42,
+    n_jobs=-1
+)
+search.fit(X_train, y_train)
+print("Best params:", search.best_params_)
+print("Best score:", search.best_score_)
 ```
 
 ## Industrial relevance
@@ -72,6 +95,7 @@ print(classification_report(y_test, xgb.predict(X_test)))
 - Feature importance from tree ensembles is widely used; SHAP is preferred for rigorous explanations.
 - In production: prefer fewer well-regularized trees for latency; monitor for data drift; retrain periodically.
 - No scaling required for tree-based models.
+- Always compare multiple models (including a simple baseline) before selecting the final one.
 
 ## Interview questions
 
@@ -85,3 +109,4 @@ print(classification_report(y_test, xgb.predict(X_test)))
 8. What is out-of-bag evaluation and when is it reliable?
 9. Why do tree ensembles not require feature scaling?
 10. Describe a situation where you would prefer a simple logistic regression over a gradient boosting model.
+11. How would you systematically compare several models on a new tabular dataset?
