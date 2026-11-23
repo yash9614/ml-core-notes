@@ -13,6 +13,53 @@ Source: codebasics model evaluation exercises (heart failure + hotel reservation
 - **PR-AUC**: focuses on the positive class. Prefer this for fraud, churn, and rare-event problems.
 - **Log loss**: penalizes confident wrong predictions. Sensitive to calibration.
 
+## Precision-Recall Tradeoffs
+
+Precision and recall usually move in opposite directions as you change the decision threshold:
+- Lower threshold → more positives predicted → higher recall, lower precision
+- Higher threshold → fewer positives predicted → higher precision, lower recall
+
+| Scenario | Priority | Why |
+|----------|----------|-----|
+| Fraud detection | High recall | Missing fraud is expensive |
+| Spam filtering | High precision | False positives annoy users |
+| Medical screening | High recall | Missing a disease is dangerous |
+| Marketing / recommendations | Often precision | Don’t spam users with irrelevant offers |
+
+Default threshold of 0.5 is almost never optimal. Choose the operating point that matches the business cost of errors.
+
+### Practical pattern (threshold tuning for F1 or custom objective)
+
+```python
+from sklearn.metrics import precision_recall_curve, classification_report
+import matplotlib.pyplot as plt
+
+y_prob = model.predict_proba(X_test)[:, 1]
+precisions, recalls, thresholds = precision_recall_curve(y_test, y_prob)
+
+# Plot
+plt.plot(recalls, precisions)
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.title("Precision-Recall Curve")
+plt.show()
+
+# Find threshold that maximizes F1
+f1_scores = 2 * (precisions[:-1] * recalls[:-1]) / (precisions[:-1] + recalls[:-1] + 1e-10)
+best_idx = f1_scores.argmax()
+best_threshold = thresholds[best_idx]
+print(f"Best threshold (max F1): {best_threshold:.3f}")
+
+y_pred_tuned = (y_prob >= best_threshold).astype(int)
+print(classification_report(y_test, y_pred_tuned))
+```
+
+**Industrial notes**:
+- Threshold selection is a business decision. Model the probabilities well, then pick the operating point with stakeholders.
+- Always evaluate precision and recall on the original (imbalanced) distribution — never on a resampled training set.
+- In production, monitor precision and recall separately; they can drift independently when the data distribution changes.
+- Prefer PR-AUC over ROC-AUC when the positive class is rare.
+
 ### Practical pattern (heart failure – compare models with ROC)
 
 ```python
@@ -116,3 +163,4 @@ print("Best score:", search.best_score_)
 7. What is data leakage in cross-validation and how do you prevent it?
 8. Walk through comparing three models using ROC curves and classification reports.
 9. How would you evaluate a model that will be used for real-time fraud detection?
+10. Explain the precision-recall tradeoff. How does changing the decision threshold affect each? When would you optimize for one over the other?
