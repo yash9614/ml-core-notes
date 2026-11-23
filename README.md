@@ -32,6 +32,7 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 | Anomaly detection and PCA | [notes/11-anomaly-and-pca.md](notes/11-anomaly-and-pca.md) | Isolation Forest, LOF, `PCA.pdf` |
 | Metrics, bias/variance, cross-validation | [notes/12-metrics-and-validation.md](notes/12-metrics-and-validation.md) | performance-metrics PDFs, `Types+Of+Cross+Validation.pdf` |
 | Overfitting and underfitting | [notes/overfitting-underfitting.md](notes/overfitting-underfitting.md) | `8-Overfitting+And+Underfitting.pdf` |
+| Practical end-to-end workflow | [notes/practical-workflow.md](notes/practical-workflow.md) | holiday package, diabetes, and other practical notebooks |
 | Coding concepts (stable softmax, BCE, cosine, LoRA, …) | [notes/13-coding-concepts.md](notes/13-coding-concepts.md) | from coding questions |
 | Interview bank (conceptual) | [interview/questions.md](interview/questions.md) | all of the above |
 | Interview bank (coding) | [interview/coding_questions.md](interview/coding_questions.md) | top-k cosine, stable softmax, BCE, top-k accuracy, Gini stump, LoRA, logistic GD, confusion matrix, cross-entropy |
