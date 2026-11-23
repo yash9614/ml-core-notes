@@ -1,6 +1,7 @@
-# K-nearest neighbors
+# K-Nearest Neighbors
 
-Source: `1,0-KNN+Classification+And+Regression.pdf`, `2.0-KD+Tree+Ball+Tree+.pdf`, `3.0-KNNClassifier.ipynb`, `3.0-KNNRegressor.ipynb`.
+Source: Krish Naik materials + core concepts.  
+**Industrial relevance and practical patterns added.**
 
 ## What it is
 
@@ -10,33 +11,59 @@ No weight vector. The model is the data. Prediction cost grows with the dataset,
 
 ## Distance and scale
 
-Euclidean distance is dominated by the column with the largest range. Scale first, or a salary column drowns age. Categorical features need a defined distance. One-hot then Euclidean is a choice, not a law.
+Euclidean distance is dominated by the column with the largest range. **Always scale features.** A salary column will drown age if unscaled. Categorical features need a defined distance (one-hot + Euclidean is common but not perfect).
 
 Weighted KNN: closer neighbors can vote with higher weight (inverse distance). Uniform weight treats all k neighbors equally.
 
 ## Choosing k
 
-k = 1 memorizes. k very large predicts the global mean. Odd k avoids ties in binary classification. Pick k on a validation curve.
+k = 1 memorizes the training data. Very large k predicts the global mean. Odd k avoids ties in binary classification. Pick k on a validation curve.
 
-Curse of dimensionality: in high dimension every point is far from every other point. Distances stop meaning “similar.” KNN gets worse as you add junk features. PCA or feature selection comes before KNN, not after.
+**Curse of dimensionality**: in high dimension every point is far from every other point. Distances stop meaning “similar.” KNN gets worse as you add junk features. Prefer PCA or feature selection before KNN.
 
 ## KD-tree and ball tree
 
-**KD-tree**: recursively split the space on one axis at a time (median of that feature). A query walks the tree and prunes branches that cannot contain a closer neighbor. Fast in low dimension (roughly d ≤ 20). Degrades to near-linear scan when dimension is high.
+- **KD-tree**: recursively split on one axis at a time. Fast in low dimension (roughly d ≤ 20). Degrades in high dimension.
+- **Ball tree**: partitions into nested hyperspheres. Often better than KD-tree when dimension is higher.
+- **Brute force**: compute every distance. Wins when n is small or d is large.
 
-**Ball tree**: partitions into nested hyperspheres. Better than KD-tree when dimension is higher, because spheres adapt to the data distribution. Still loses to brute force in very high dimension.
+sklearn chooses automatically when `algorithm='auto'`.
 
-**Brute force**: compute every distance. Wins when n is small or d is large, or when you need exact results and the tree overhead is not worth it.
+### Practical code
 
-sklearn chooses automatically based on the data shape when `algorithm='auto'`.
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import cross_val_score
+
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("knn", KNeighborsClassifier(n_neighbors=5, weights="distance"))
+])
+
+# Quick validation
+scores = cross_val_score(pipe, X, y, cv=5, scoring="accuracy")
+print("Mean accuracy:", scores.mean())
+
+pipe.fit(X_train, y_train)
+y_pred = pipe.predict(X_test)
+```
+
+## Industrial relevance
+
+- Rarely the final production model on large tabular data (tree ensembles usually win). Useful as a baseline or when the decision boundary is highly local.
+- Prediction latency grows with dataset size — problematic for real-time systems with millions of rows unless approximate nearest neighbor methods are used.
+- Still common in recommendation systems (item-item or user-user collaborative filtering) and some anomaly detection setups.
+- Always scale. Consider dimensionality reduction if features are high-dimensional.
 
 ## Interview questions
 
-1. Training complexity? Almost none, apart from storing rows and maybe building a tree. The cost is at prediction.
-2. Why scale? Distance is unit-dependent.
-3. KD-tree vs ball tree? Both partition space so a query does not scan every row. KD-tree splits on axes; ball tree uses spheres. Both degrade in high dimension. Brute force wins there.
-4. Weighted vs uniform neighbors? Weighted gives more influence to closer points. Can help when density varies.
-
-## Kaggle
-
-[Digit Recognizer](https://www.kaggle.com/competitions/digit-recognizer). Scale pixels, try k from 1 to 15, and compare with a linear model.
+1. What is trained in KNN? Almost nothing — the model is the stored data.
+2. Why must you scale features before KNN?
+3. How do you choose k? What happens if k is too small or too large?
+4. Explain the curse of dimensionality and how it affects KNN.
+5. What is the difference between KD-tree, ball tree, and brute force?
+6. When would you use weighted KNN instead of uniform?
+7. Why is KNN rarely used as the primary model on large production tabular datasets?
+8. How does KNN handle categorical features?
