@@ -1,7 +1,7 @@
 # Model Evaluation & Fine-Tuning – Key Takeaways
 
 Source: codebasics.io Takeaways – Model Evaluation & Fine Tuning.  
-**Industrial relevance added:** production evaluation practices, metric selection by business cost, and modern tuning approaches.
+**Industrial relevance and practical patterns added.**
 
 ## ROC Curve & AUC
 
@@ -11,7 +11,7 @@ Source: codebasics.io Takeaways – Model Evaluation & Fine Tuning.
   - 1.0 = perfect separation  
 - When talking to stakeholders, translate ROC/AUC/precision into business impact (cost of false positives vs. false negatives).
 
-**Industrial relevance:**  
+**Industrial relevance**:  
 - AUC is good for ranking models but does not tell you the best operating threshold.  
 - Always plot precision-recall curves when classes are imbalanced.  
 - Business stakeholders rarely care about AUC; they care about “how many frauds did we catch at an acceptable false-positive rate?”
@@ -25,15 +25,23 @@ Source: codebasics.io Takeaways – Model Evaluation & Fine Tuning.
 3. Repeat so every fold is used as test once.  
 4. Average the scores.
 
-Also useful for comparing different hyperparameter settings of the same model.
-
 ### Stratified K-Fold
 
 Same as K-Fold but preserves the class distribution in every fold. Important for imbalanced classification.
 
-**Industrial relevance:**  
+**Industrial relevance**:  
 - Prefer time-series or group-based splits (GroupKFold) when data has temporal dependence or repeated entities (users, accounts). Random K-Fold can leak information.  
 - Nested cross-validation is the gold standard when you also tune hyperparameters.
+
+### Practical pattern
+
+```python
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_val_score(model, X, y, cv=skf, scoring="roc_auc")
+print(f"Mean ROC-AUC: {scores.mean():.3f} (+/- {scores.std():.3f})")
+```
 
 ## Hyperparameter Tuning
 
@@ -43,10 +51,29 @@ Same as K-Fold but preserves the class distribution in every fold. Important for
 
 Always prefer RandomizedSearchCV or Bayesian methods for large grids; use GridSearchCV only for small, carefully chosen spaces.
 
-**Industrial relevance:**  
-- Tune on a proper validation strategy, not just the training set.  
-- Keep a simple baseline (default parameters) for comparison.  
-- Document the final hyperparameters and the search space.
+### Practical pattern
+
+```python
+from sklearn.model_selection import RandomizedSearchCV
+
+param_dist = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [3, 5, 10, None],
+    "min_samples_split": [2, 5, 10]
+}
+
+search = RandomizedSearchCV(
+    RandomForestClassifier(random_state=42),
+    param_distributions=param_dist,
+    n_iter=15,
+    cv=5,
+    scoring="roc_auc",
+    random_state=42,
+    n_jobs=-1
+)
+search.fit(X_train, y_train)
+print("Best params:", search.best_params_)
+```
 
 ## Choosing the Right Metric
 
@@ -66,21 +93,11 @@ Always prefer RandomizedSearchCV or Bayesian methods for large grids; use GridSe
 - \( R^2 \): proportion of variance explained.  
 - MAPE / business-specific error when relative error matters.
 
-**Industrial relevance:**  
+**Industrial relevance**:  
 - Define the primary metric with the business before modeling.  
 - Always report both model metrics and business impact metrics.  
 - Segmented evaluation (by geography, customer segment, time) often reveals problems that overall metrics hide.
-
-## Model Selection (high-level)
-
-No single perfect flowchart. Consider:  
-- Problem type (regression / classification / clustering)  
-- Relationships between features (linear vs. non-linear)  
-- Data type (tabular, text, image)  
-- Data size and compute budget  
-- Need for interpretability and latency constraints
-
-Judgment + experimentation + proper validation is the practical path. In tabular data, start with a linear model and a gradient boosting model.
+- Threshold selection is a business decision, not a modeling one.
 
 ## Interview Questions
 
@@ -91,3 +108,4 @@ Judgment + experimentation + proper validation is the practical path. In tabular
 5. What is nested cross-validation and when is it necessary?
 6. How would you evaluate a model that will be used for real-time fraud detection?
 7. What are common pitfalls in hyperparameter tuning?
+8. How do you choose the decision threshold in a production system?
