@@ -34,6 +34,7 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 | Coding concepts (stable softmax, BCE, cosine, LoRA, …) | [notes/13-coding-concepts.md](notes/13-coding-concepts.md) | from coding questions |
 | Interview bank (conceptual) | [interview/questions.md](interview/questions.md) | all of the above |
 | Interview bank (coding) | [interview/coding_questions.md](interview/coding_questions.md) | top-k cosine, stable softmax, BCE, top-k accuracy, Gini stump, LoRA, logistic GD, confusion matrix, cross-entropy |
+| Codebasics interview questions | [interview/codebasics_questions.md](interview/codebasics_questions.md) | beginner / intermediate / advanced |
 | Kaggle problems | [kaggle/must-try.md](kaggle/must-try.md) | practice only |
 
 ## Codebasics.io Takeaways
