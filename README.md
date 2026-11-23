@@ -35,6 +35,20 @@ That folder is the raw course dump: PDFs, notebooks, and two end-to-end apps. Th
 | Interview bank (coding) | [interview/coding_questions.md](interview/coding_questions.md) | top-k cosine, stable softmax, BCE, top-k accuracy, Gini stump, LoRA, logistic GD, confusion matrix, cross-entropy |
 | Kaggle problems | [kaggle/must-try.md](kaggle/must-try.md) | practice only |
 
+## Codebasics.io Takeaways
+
+Clean, structured study notes extracted from the codebasics ML takeaway PDFs. These complement the main algorithm notes above.
+
+| Topic | Note |
+|---|---|
+| ML Project Lifecycle | [notes/codebasics/ml-project-lifecycle.md](notes/codebasics/ml-project-lifecycle.md) |
+| Feature Engineering | [notes/codebasics/feature-engineering.md](notes/codebasics/feature-engineering.md) |
+| Supervised Regression | [notes/codebasics/supervised-regression-takeaways.md](notes/codebasics/supervised-regression-takeaways.md) |
+| Supervised Classification | [notes/codebasics/supervised-classification-takeaways.md](notes/codebasics/supervised-classification-takeaways.md) |
+| Ensemble Learning | [notes/codebasics/ensemble-learning-takeaways.md](notes/codebasics/ensemble-learning-takeaways.md) |
+| Unsupervised Learning | [notes/codebasics/unsupervised-learning-takeaways.md](notes/codebasics/unsupervised-learning-takeaways.md) |
+| Model Evaluation & Fine-Tuning | [notes/codebasics/model-evaluation-fine-tuning.md](notes/codebasics/model-evaluation-fine-tuning.md) |
+
 ## Projects already in the course dump
 
 These stay in the old repo until we port code.
