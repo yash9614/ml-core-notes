@@ -1,6 +1,8 @@
-# Linear regression
+# Linear Regression
 
-Source: codebasics exercises + takeaways.  
+Source: Krish Naik materials (economic index, practical notebooks) + core concepts.  
+**Industrial relevance and practical patterns added.**
+
 **Exercise notebook:** [regression_ex1.ipynb](02-linear-regression/regression_ex1.ipynb)
 
 ## What it is
@@ -29,39 +31,34 @@ w = (X^\top X)^{-1} X^\top y
 
 Gradient descent is used when the matrix is large or singular.
 
-### Practical code (single variable – weather example)
+### Practical code
 
 ```python
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-
-df = pd.read_csv("weather_data.csv")
-model = LinearRegression()
-model.fit(df[['hours_sunlight']], df['daily_temperature'])
-
-print("Coefficient:", model.coef_)
-print("Intercept:", model.intercept_)
-
-# Predict
-hours = [[5], [8], [12]]
-print(model.predict(hours))
-```
-
-### Multiple variables + train/test
-
-```python
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
-X = df[['hours_sunlight', 'humidity_level']]
-y = df['daily_temperature']
+# Example: economic index or similar tabular data
+df = pd.read_csv("economic_index.csv")
+df = df.drop(columns=["Unnamed: 0", "year", "month"], errors="ignore")
+
+X = df.drop("target_column", axis=1)   # adjust column name
+y = df["target_column"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-model = LinearRegression()
-model.fit(X_train, y_train)
 
-y_pred = model.predict(X_test)
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("lr", LinearRegression())
+])
+pipe.fit(X_train, y_train)
+
+y_pred = pipe.predict(X_test)
 print("R²:", r2_score(y_test, y_pred))
+print("MAE:", mean_absolute_error(y_test, y_pred))
 print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
 ```
 
@@ -78,13 +75,27 @@ print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
 - \(R^2\): fraction of variance explained. Adjusted \(R^2\) penalizes extra features.
 - Residual plot: curved pattern → linear form is wrong. Funnel shape → variance not constant.
 
+## Regression metrics – quick reminder
+
+- **MAE**: average absolute error. Robust to outliers. Same units as target.
+- **MSE / RMSE**: penalizes large errors more. RMSE is in the same units as the target.
+- **R²**: fraction of variance explained. Can be misleading if you keep adding features.
+
+## Industrial relevance
+
+- Still widely used as an interpretable baseline (pricing, risk scoring, forecasting when relationships are roughly linear).
+- Coefficients can be explained to business stakeholders as “for every unit increase in X, Y changes by … holding other factors fixed.”
+- Always check residual plots and VIF when the model will be used for interpretation rather than pure prediction.
+- In production, monitor for multicollinearity changes and data drift that can make coefficients unstable.
+- Prefer pipelines so scaling is consistent between training and serving.
+
 ## Interview questions
 
-1. Why squared error and not absolute error? Squared error is differentiable and punishes large misses. Absolute error is more robust to outliers but harder to optimize.
-2. What does a large positive coefficient **not** mean? It does not mean the feature caused the outcome. It is an association conditional on the other columns.
-3. Multicollinearity: predictions can still be good. Individual coefficients cannot be trusted. Check VIF or drop one of the correlated columns.
-4. How do you know the line is the wrong shape? Residual plot bends. Then try a transform or polynomial features.
-5. Walk through a simple linear regression implementation with sklearn (or from scratch with gradient descent).
-6. What is the difference between \(R^2\) and adjusted \(R^2\)? When does it matter?
-7. How would you diagnose and handle multicollinearity in a linear model used for interpretation (e.g., pricing or risk)?
-8. Explain training-serving skew in the context of linear regression features.
+1. Why squared error and not absolute error?
+2. What does a large positive coefficient **not** mean?
+3. How do you diagnose and handle multicollinearity?
+4. How do you know the linear form is wrong? What do you look for in residual plots?
+5. Explain the difference between \(R^2\) and adjusted \(R^2\).
+6. Walk through building a linear regression pipeline with scaling and evaluation.
+7. When would you prefer MAE over RMSE?
+8. How would you handle a linear regression model used for pricing when features are correlated?
