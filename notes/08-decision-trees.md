@@ -63,6 +63,22 @@ print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
 print("R²:", r2_score(y_test, y_pred))
 ```
 
+### Visualization and feature importance
+
+```python
+from sklearn import tree
+import matplotlib.pyplot as plt
+
+# Visualize (keep max_depth small for readability)
+plt.figure(figsize=(15, 8))
+tree.plot_tree(best_tree, filled=True, max_depth=3, feature_names=X.columns)
+plt.show()
+
+# Feature importance
+importances = pd.Series(best_tree.feature_importances_, index=X.columns).sort_values(ascending=False)
+print(importances.head(10))
+```
+
 ## Industrial relevance
 
 - Single decision trees are highly interpretable and still used in regulated domains (credit, insurance, healthcare) where stakeholders need to see the exact rules.
@@ -70,6 +86,7 @@ print("R²:", r2_score(y_test, y_pred))
 - Useful for feature importance exploration and for generating business rules that can be implemented without a model serving layer.
 - In production, prefer shallow trees (`max_depth` 3–6) or tree ensembles; deep single trees overfit and are brittle to data shifts.
 - For regression, always compare against a simple linear baseline and check residual plots.
+- Tree visualization is excellent for explaining decisions to non-technical stakeholders when the tree is kept shallow.
 
 ## Interview questions
 
@@ -82,3 +99,4 @@ print("R²:", r2_score(y_test, y_pred))
 7. Walk through building a Decision Tree pipeline with categorical encoding and evaluation.
 8. What is cost-complexity pruning and when would you use it?
 9. How would you tune a decision tree regressor? What metrics would you use?
+10. How can you use a decision tree to explain model decisions to business stakeholders?
