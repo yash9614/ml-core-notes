@@ -1,42 +1,49 @@
 # Clustering
 
-Source: codebasics unsupervised exercises + core concepts.  
-**Industrial relevance and intuition added.**
+Source: codebasics unsupervised exercises + Krish Naik K-Means materials.  
+**Industrial relevance, intuition, and practical patterns added.**
 
 ## K-means
 
 Pick k centroids. Assign each point to the nearest centroid. Move each centroid to the mean of its points. Repeat until assignments stabilize.
 
-**Objective**: within-cluster sum of squares (inertia). It wants compact, roughly spherical clusters of similar size.
+**Objective**: within-cluster sum of squares (inertia / WCSS). It wants compact, roughly spherical clusters of similar size.
 
 **Intuition**: Imagine dropping k pins on a map and repeatedly moving each pin to the center of the points closest to it. It works well when clusters are round and similarly sized; it fails on rings, elongated clusters, or clusters of very different densities.
 
 **Practical points**:
 - Scale features first — Euclidean distance is dominated by the feature with the largest range.
-- Results depend on initialization; use `k-means++` or run multiple times.
-- Choose k with the elbow of inertia, then check silhouette score. Neither knows the business meaning of a segment — always validate with stakeholders.
+- Results depend on initialization; use `k-means++` or run multiple times (`n_init`).
+- Choose k with the elbow of inertia (WCSS), then check silhouette score. Neither knows the business meaning of a segment — always validate with stakeholders.
 
-### Practical code sketch
+### Practical code (elbow method)
 
 ```python
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Elbow
-inertias = []
-for k in range(2, 11):
-    km = KMeans(n_clusters=k, random_state=42, n_init=10)
+# Elbow (WCSS)
+wcss = []
+for k in range(1, 11):
+    km = KMeans(n_clusters=k, init="k-means++", random_state=42, n_init=10)
     km.fit(X_scaled)
-    inertias.append(km.inertia_)
+    wcss.append(km.inertia_)
 
-# Final model
-km = KMeans(n_clusters=3, random_state=42, n_init=10)
+plt.plot(range(1, 11), wcss, marker="o")
+plt.xlabel("Number of clusters (k)")
+plt.ylabel("WCSS (Inertia)")
+plt.title("Elbow Method")
+plt.show()
+
+# Final model (choose k from elbow)
+km = KMeans(n_clusters=3, init="k-means++", random_state=42, n_init=10)
 labels = km.fit_predict(X_scaled)
-print("Silhouette:", silhouette_score(X_scaled, labels))
+print("Silhouette score:", silhouette_score(X_scaled, labels))
 ```
 
 ## Hierarchical
@@ -63,18 +70,20 @@ A point is a **core point** if at least `min_samples` points lie within `eps`. C
 
 - Clustering is most often used for **customer segmentation**, anomaly detection, and exploratory analysis — not as the final production model.
 - Always validate clusters with business stakeholders. Mathematical clusters may not be actionable.
-- Scale features. Prefer K-means++ initialization.
+- Scale features. Prefer K-means++ initialization and multiple runs.
 - For production anomaly detection, Isolation Forest or DBSCAN are common; K-means is rarely the best choice when outliers are the goal.
 - Dendrograms are excellent for communicating hierarchical structure to non-technical stakeholders.
+- In practice, combine elbow + silhouette + domain knowledge. Pure mathematical criteria can mislead.
 
 ## Interview questions
 
-1. What is the objective of K-means? Within-cluster sum of squares.
+1. What is the objective of K-means? Within-cluster sum of squares (WCSS / inertia).
 2. Why does K-means fail on a ring-shaped cluster? The centroid falls in the hole.
-3. How do you choose the number of clusters? Elbow + silhouette + business interpretability.
+3. How do you choose the number of clusters? Elbow (WCSS) + silhouette + business interpretability.
 4. What are the main limitations of K-means? Assumes spherical clusters of similar size, sensitive to initialization and outliers, requires k.
 5. How does DBSCAN differ from K-means? Density-based, finds arbitrary shapes, automatically detects outliers, no need to specify k.
 6. When would you use hierarchical clustering instead of K-means?
 7. Why must you scale features before clustering?
 8. How would you evaluate the quality of clusters in a real business setting?
 9. What is the role of linkage methods in hierarchical clustering?
+10. Explain the elbow method. What does a clear elbow look like?
