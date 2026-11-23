@@ -1,6 +1,6 @@
-# Logistic regression
+# Logistic Regression
 
-Source: codebasics multiclass dry-bean exercise + core concepts.  
+Source: codebasics multiclass dry-bean exercise + Krish Naik materials.  
 **Exercise notebook:** [logistic_assignment.ipynb](04-logistic-regression/logistic_assignment.ipynb)
 
 ## What it is
@@ -70,6 +70,43 @@ print(classification_report(y_test, y_pred))
 print(confusion_matrix(y_test, y_pred))
 ```
 
+### Hyperparameter tuning pattern (from Krish materials)
+
+```python
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, StratifiedKFold
+
+param_grid = {
+    "C": [0.01, 0.1, 1.0, 10, 100],
+    "penalty": ["l1", "l2"],
+    "solver": ["liblinear", "saga"]
+}
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+# Grid search
+grid = GridSearchCV(
+    LogisticRegression(max_iter=1000),
+    param_grid,
+    scoring="roc_auc",
+    cv=cv,
+    n_jobs=-1
+)
+grid.fit(X_train, y_train)
+print("Best params (Grid):", grid.best_params_)
+
+# Faster alternative
+random_search = RandomizedSearchCV(
+    LogisticRegression(max_iter=1000),
+    param_distributions=param_grid,
+    n_iter=10,
+    scoring="roc_auc",
+    cv=cv,
+    random_state=42
+)
+random_search.fit(X_train, y_train)
+print("Best params (Random):", random_search.best_params_)
+```
+
 ## Threshold
 
 0.5 is not sacred. Tune it on a precision-recall curve when classes are imbalanced or error costs differ.
@@ -79,6 +116,7 @@ print(confusion_matrix(y_test, y_pred))
 - Default penalty is L2. `C` is the inverse regularization strength.
 - Use a pipeline so scaling is fit only on train.
 - `class_weight='balanced'` is useful for imbalanced multiclass problems.
+- Prefer RandomizedSearchCV when the search space is large.
 
 ## Interview questions
 
@@ -90,3 +128,4 @@ print(confusion_matrix(y_test, y_pred))
 6. How do you choose the decision threshold in an imbalanced classification problem?
 7. Walk through a multiclass logistic regression pipeline with sklearn (including evaluation).
 8. What is the difference between `C` and the regularization strength \(\lambda\)?
+9. How would you tune a logistic regression model? When would you prefer RandomizedSearchCV over GridSearchCV?
