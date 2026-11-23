@@ -1,60 +1,90 @@
 # Linear regression
 
-Source: `1-Simple+Linear+Regression.pdf`, `2-Multiple+Linear+Regression.pdf`, `linearregressionOLS.pdf`, `height-weight.csv`, `economic_index.csv`, `Multiple+Linear+Regression-+Economics+Dataset.ipynb`.
-
-**Exercise notebook:** [regression_ex1.ipynb](02-linear-regression/regression_ex1.ipynb) (mapped from Google Drive ML exercises)
+Source: codebasics exercises + takeaways.  
+**Exercise notebook:** [regression_ex1.ipynb](02-linear-regression/regression_ex1.ipynb)
 
 ## What it is
 
-Fit a straight line, or a flat hyperplane, that predicts a number.
+Fit a straight line (or hyperplane) that predicts a continuous number.
 
-$$
+\[
 \hat{y} = w_0 + w_1 x_1 + \cdots + w_p x_p
-$$
+\]
 
-Simple linear regression has one input. Multiple linear regression has many. The word linear means linear in the weights, not that the raw feature must be a straight line of the original column.
+Simple linear regression has one input. Multiple linear regression has many. “Linear” means linear in the **weights**, not that the raw feature must be a straight line.
 
 ## How the weights are found
 
-Ordinary least squares minimizes the sum of squared residuals.
+Ordinary least squares minimizes the sum of squared residuals:
 
-$$
+\[
 J(w) = \sum_i (y_i - \hat{y}_i)^2
-$$
+\]
 
-Closed form, when $X^\top X$ is invertible:
+Closed form (when \(X^\top X\) is invertible):
 
-$$
+\[
 w = (X^\top X)^{-1} X^\top y
-$$
+\]
 
-Gradient descent does the same job when the matrix is large or singular. Learning rate too big diverges. Too small just wastes steps.
+Gradient descent is used when the matrix is large or singular.
+
+### Practical code (single variable – weather example)
+
+```python
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+df = pd.read_csv("weather_data.csv")
+model = LinearRegression()
+model.fit(df[['hours_sunlight']], df['daily_temperature'])
+
+print("Coefficient:", model.coef_)
+print("Intercept:", model.intercept_)
+
+# Predict
+hours = [[5], [8], [12]]
+print(model.predict(hours))
+```
+
+### Multiple variables + train/test
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+
+X = df[['hours_sunlight', 'humidity_level']]
+y = df['daily_temperature']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+print("R²:", r2_score(y_test, y_pred))
+print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
+```
 
 ## Assumptions that actually matter
 
-- The relationship is roughly linear in the features you gave the model.
-- Errors have constant spread (homoscedasticity). A fan shape means the intervals are wrong.
-- Errors are independent. Time series often breaks this.
-- For the usual confidence intervals, errors are roughly normal. The point prediction is more robust than the interval.
-- Features should not be exact copies of each other. Multicollinearity makes individual weights unstable even when predictions are fine.
+- Relationship is roughly linear in the features you gave the model.
+- Errors have roughly constant spread (homoscedasticity).
+- Errors are independent (time series often breaks this).
+- Features should not be perfect copies of each other (multicollinearity makes individual weights unstable).
 
 ## Reading the fit
 
-- Coefficient: change in $y$ for a one-unit change in that feature, holding the others fixed. Only meaningful after you know the units and whether features were scaled.
-- $R^2$: fraction of variance explained. It rises when you add junk features. Adjusted $R^2$ penalizes that.
-- Residual plot: curved pattern means the linear form is wrong. Funnel shape means variance is not constant.
+- Coefficient: change in \(y\) for a one-unit change in that feature, holding others fixed.
+- \(R^2\): fraction of variance explained. Adjusted \(R^2\) penalizes extra features.
+- Residual plot: curved pattern → linear form is wrong. Funnel shape → variance not constant.
 
 ## Interview questions
 
-1. Why squared error and not absolute error? Squared error is differentiable and punishes large misses. Absolute error is the median regression and is harder to optimize, but more robust to outliers.
-2. What does a large positive coefficient not mean? It does not mean the feature caused the outcome. It is an association conditional on the other columns.
+1. Why squared error and not absolute error? Squared error is differentiable and punishes large misses. Absolute error is more robust to outliers but harder to optimize.
+2. What does a large positive coefficient **not** mean? It does not mean the feature caused the outcome. It is an association conditional on the other columns.
 3. Multicollinearity: predictions can still be good. Individual coefficients cannot be trusted. Check VIF or drop one of the correlated columns.
-4. How do you know the line is the wrong shape? Residual plot bends. Then try a transform or polynomial features, not a deeper story about the same line.
-
-Full set: [interview/questions.md](../interview/questions.md#02-linear-regression).
-
-## Kaggle
-
-- [House Prices](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques): start with a linear model before any tree. Metric is RMSLE.
-- [Medical Cost Personal Datasets](https://www.kaggle.com/datasets/mirichoi0218/insurance): small, good for coefficients and residual plots.
-- Course data: `height-weight.csv` for the one-feature case, `economic_index.csv` for the multiple case.
+4. How do you know the line is the wrong shape? Residual plot bends. Then try a transform or polynomial features.
+5. Walk through a simple linear regression implementation with sklearn (or from scratch with gradient descent).
+6. What is the difference between \(R^2\) and adjusted \(R^2\)? When does it matter?
+7. How would you diagnose and handle multicollinearity in a linear model used for interpretation (e.g., pricing or risk)?
+8. Explain training-serving skew in the context of linear regression features.
